@@ -1,0 +1,12 @@
+# Environment / secrets
+.env
+*.env
+config.local.js
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp

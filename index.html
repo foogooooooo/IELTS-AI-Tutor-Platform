@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TL - IELTS Learning Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-new.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@300;400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container">
+            <div class="auth-left">
+                <div class="auth-brand">
+                    <h1 class="brand-title">TL</h1>
+                    <p class="brand-subtitle">Your IELTS Learning Partner</p>
+                </div>
+                <div class="auth-decoration">
+                    <div class="decoration-circle"></div>
+                    <div class="decoration-line"></div>
+                </div>
+            </div>
+            <div class="auth-right">
+                <div class="auth-form">
+                    <h2 class="form-title">Welcome back</h2>
+                    <p class="form-subtitle">Continue your IELTS learning journey</p>
+
+                    <div class="input-group">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" placeholder="your@email.com" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+
+                    <button class="btn-primary" id="login-btn">Sign In</button>
+                    <button class="btn-secondary" id="register-btn">Create Account</button>
+
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+
+                    <button class="btn-demo" id="demo-btn">Demo Mode (No login required)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app-screen" class="screen">
+        <!-- Navigation -->
+        <nav class="main-nav">
+            <div class="nav-brand">
+                <h1>TL</h1>
+                <span class="nav-beta">BETA</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item active" data-view="planner">
+                    <span class="nav-icon">📅</span>
+                    <span>Study Plan</span>
+                </button>
+                <button class="nav-item" data-view="course-library">
+                    <span class="nav-icon">📚</span>
+                    <span>Course Library</span>
+                </button>
+                <button class="nav-item" data-view="ai-assistant">
+                    <span class="nav-icon">💬</span>
+                    <span>AI Assistant</span>
+                </button>
+                <button class="nav-item" data-view="quality-center">
+                    <span class="nav-icon">📈</span>
+                    <span>Quality Check</span>
+                </button>
+                <button class="nav-item" data-view="progress">
+                    <span class="nav-icon">📊</span>
+                    <span>Progress</span>
+                </button>
+                <button class="nav-item" data-view="notebook">
+                    <span class="nav-icon">📓</span>
+                    <span>Notebook</span>
+                </button>
+            </div>
+            <div class="nav-user">
+                <div class="api-status" id="api-status" title="AI API Status">
+                    <span class="api-status-dot"></span>
+                    <span class="api-status-text">Checking...</span>
+                </div>
+                <button class="btn-icon" id="settings-btn">⚙️</button>
+                <button class="btn-icon" id="logout-btn">🚪</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Study Plan View -->
+            <div id="planner-view" class="view active">
+                <!-- Dashboard -->
+                <div class="planner-dashboard">
+                    <div class="daily-progress-ring">
+                        <svg viewBox="0 0 120 120" width="100" height="100">
+                            <circle cx="60" cy="60" r="50" stroke="#E5E1DA" stroke-width="10" fill="none"/>
+                            <circle cx="60" cy="60" r="50" stroke="#D4A574" stroke-width="10" fill="none"
+                                    stroke-linecap="round" transform="rotate(-90 60 60)"
+                                    stroke-dasharray="314.16" stroke-dashoffset="314.16"
+                                    id="daily-progress-circle"/>
+                        </svg>
+                        <div class="ring-center">
+                            <span id="daily-percent">0%</span>
+                            <span class="ring-label">done</span>
+                        </div>
+                    </div>
+                    <div class="planner-stats">
+                        <div class="stat-pill">🔥 <strong id="streak-count">0</strong> day streak</div>
+                        <div class="stat-pill">✅ <strong id="completed-count">0</strong> done</div>
+                        <div class="stat-pill">📅 Day <strong id="study-day-count">1</strong></div>
+                    </div>
+                    <div class="planner-date-label">
+                        <span id="current-date"></span>
+                    </div>
+                    <div class="planner-header-actions">
+                        <button class="btn-primary-sm" id="quick-add-task-btn">+ Quick Add</button>
+                        <button class="btn-small" id="ask-ai-plan">🤖 AI Plan</button>
+                        <button class="btn-small" id="clear-plan">🗑️ Clear</button>
+                    </div>
+                </div>
+
+                <!-- Body: Vertical Schedule + Sidebar -->
+                <div class="planner-body">
+                    <!-- Vertical Schedule -->
+                    <div class="vertical-schedule">
+                        <!-- Morning -->
+                        <div class="schedule-section">
+                            <div class="schedule-section-header">
+                                <span class="section-period-icon">🌅</span>
+                                <h3>Morning</h3>
+                            </div>
+                            <div class="schedule-blocks" id="morning-blocks"></div>
+                        </div>
+                        <!-- Afternoon -->
+                        <div class="schedule-section">
+                            <div class="schedule-section-header">
+                                <span class="section-period-icon">🌞</span>
+                                <h3>Afternoon</h3>
+                            </div>
+                            <div class="schedule-blocks" id="afternoon-blocks"></div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar: Quick Add + Heatmap + Weekly Plan -->
+                    <aside class="task-sidebar">
+                        <!-- Quick Add Panel (hidden by default) -->
+                        <div class="quick-add-panel" id="quick-add-panel" style="display:none;">
+                            <h4>Quick Add Task</h4>
+                            <input type="text" id="quick-task-title" placeholder="Task name..." />
+                            <div class="quick-add-row">
+                                <select id="quick-task-skill">
+                                    <option value="listening">🎧 Listening</option>
+                                    <option value="reading">📖 Reading</option>
+                                    <option value="writing">✍️ Writing</option>
+                                    <option value="speaking">🗣️ Speaking</option>
+                                </select>
+                                <select id="quick-task-period">
+                                    <option value="morning">Morning</option>
+                                    <option value="afternoon">Afternoon</option>
+                                </select>
+                            </div>
+                            <input type="text" id="quick-task-time" placeholder="Time slot, e.g. 09:00-10:00" />
+                            <div class="quick-add-row">
+                                <button class="btn-primary" id="save-quick-task">Add</button>
+                                <button class="btn-secondary" id="cancel-quick-task">Cancel</button>
+                            </div>
+                        </div>
+
+                        <!-- Activity Heatmap -->
+                        <div class="sidebar-card">
+                            <h4>Activity Record</h4>
+                            <div id="streak-heatmap" class="heatmap-grid"></div>
+                        </div>
+
+                        <!-- Weekly Plan -->
+                        <div class="sidebar-card">
+                            <h4>Weekly Plan</h4>
+                            <div id="weekly-plan-grid" class="weekly-grid"></div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- Course Library View -->
+            <div id="course-library-view" class="view">
+                <header class="view-header">
+                    <h2>Course Library</h2>
+                    <button class="btn-small" id="create-custom-course">+ Create Custom Course</button>
+                </header>
+
+                <div class="library-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="courses">📚 Courses</button>
+                    <button class="filter-btn" data-filter="tasks">📝 Tasks</button>
+                    <button class="filter-btn" data-filter="listening">🎧 Listening</button>
+                    <button class="filter-btn" data-filter="reading">📖 Reading</button>
+                    <button class="filter-btn" data-filter="writing">✍️ Writing</button>
+                    <button class="filter-btn" data-filter="speaking">🗣️ Speaking</button>
+                    <button class="filter-btn" data-filter="custom">⭐ My Custom</button>
+                </div>
+
+                <div class="library-grid" id="library-grid">
+                    <!-- Course cards rendered here -->
+                </div>
+            </div>
+
+            <!-- AI Assistant View -->
+            <div id="ai-assistant-view" class="view">
+                <header class="view-header">
+                    <h2>AI Learning Assistant</h2>
+                    <button class="btn-small" id="new-conversation-btn">+ New Chat</button>
+                </header>
+
+                <div class="ai-layout">
+                    <aside class="conversation-list">
+                        <div class="conversation-search">
+                            <input type="text" placeholder="Search chats..." id="conversation-search">
+                        </div>
+                        <div id="conversations-container">
+                            <div class="empty-state"><p>No conversations yet</p></div>
+                        </div>
+                    </aside>
+
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <h3 id="current-conversation-title">Select or create a conversation</h3>
+                            <button class="btn-icon" id="delete-conversation-btn">🗑️</button>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="empty-state">
+                                <div class="empty-icon">💬</div>
+                                <p>Select a conversation to start chatting</p>
+                                <p class="empty-subtitle">Or create a new conversation to get AI help</p>
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <div class="chat-input-actions">
+                                <label class="btn-icon btn-upload" for="image-upload" title="Upload image">
+                                    📷
+                                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                                </label>
+                                <textarea id="chat-input" placeholder="Ask a question or submit your work for review..." rows="3"></textarea>
+                            </div>
+                            <button class="btn-send" id="send-message-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality Check View -->
+            <div id="quality-center-view" class="view">
+                <header class="view-header">
+                    <h2>Quality Check</h2>
+                    <button class="btn-small" id="run-quality-check">🔍 Run Analysis</button>
+                </header>
+
+                <div class="quality-layout">
+                    <div class="quality-summary">
+                        <div class="quality-score-card">
+                            <div class="score-circle">
+                                <svg width="140" height="140" viewBox="0 0 140 140">
+                                    <defs>
+                                        <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#8BC34A;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <circle cx="70" cy="70" r="58" stroke="#e8e8e8" stroke-width="12" fill="none"/>
+                                    <circle cx="70" cy="70" r="58" stroke="url(#scoreGradient)" stroke-width="12" fill="none"
+                                            stroke-linecap="round" transform="rotate(-90 70 70)"
+                                            stroke-dasharray="364" stroke-dashoffset="91" id="efficiency-circle"/>
+                                </svg>
+                                <div class="score-value" id="efficiency-score">75</div>
+                                <div class="score-label">Efficiency</div>
+                            </div>
+                            <div class="score-details">
+                                <div class="score-item">
+                                    <span class="score-item-icon">✅</span>
+                                    <div class="score-item-info">
+                                        <span class="score-item-label">Completion</span>
+                                        <span class="score-item-value" id="completion-rate">85%</span>
+                                    </div>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-item-icon">🎯</span>
+                                    <div class="score-item-info">
+                                        <span class="score-item-label">Accuracy</span>
+                                        <span class="score-item-value" id="accuracy-rate">78%</span>
+                                    </div>
+                                </div>
+                                <div class="score-item">
+                                    <span class="score-item-icon">⏱️</span>
+                                    <div class="score-item-info">
+                                        <span class="score-item-label">Daily avg.</span>
+                                        <span class="score-item-value" id="time-efficiency">4.2 hrs</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="quality-trend">
+                            <h3>📈 Efficiency Trend</h3>
+                            <div class="trend-chart-container">
+                                <canvas id="efficiency-trend-chart" width="400" height="150"></canvas>
+                            </div>
+                            <div class="trend-legend">
+                                <span class="trend-item"><span class="trend-dot completed"></span> Tasks completed</span>
+                                <span class="trend-item"><span class="trend-dot score"></span> Efficiency score</span>
+                            </div>
+                        </div>
+
+                        <div class="quality-insights">
+                            <h3>🤖 AI Analysis</h3>
+                            <div id="quality-analysis-content">
+                                <div class="empty-state">
+                                    <div class="empty-icon">🔍</div>
+                                    <p>Click "Run Analysis" for a detailed report</p>
+                                    <p class="empty-subtitle">AI will analyse your study data and give personalised suggestions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quality-details">
+                        <div class="quality-skill-breakdown">
+                            <h3>🎯 Skill Breakdown</h3>
+                            <div class="skill-radar-container">
+                                <canvas id="skill-radar-chart" width="280" height="200"></canvas>
+                            </div>
+                            <div class="skill-breakdown-list" id="skill-breakdown-list">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+
+                        <div class="strengths-card">
+                            <h3>💪 Strengths</h3>
+                            <ul id="strengths-list" class="quality-list">
+                                <li class="loading-item">Run the analysis to get data</li>
+                            </ul>
+                        </div>
+
+                        <div class="improvements-card">
+                            <h3>🔧 Areas to Improve</h3>
+                            <ul id="improvements-list" class="quality-list">
+                                <li class="loading-item">Run the analysis to get data</li>
+                            </ul>
+                        </div>
+
+                        <div class="recommendations-card">
+                            <h3>📋 Recommendations</h3>
+                            <ul id="recommendations-list" class="quality-list">
+                                <li class="loading-item">Run the analysis to get data</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress View -->
+            <div id="progress-view" class="view">
+                <header class="view-header">
+                    <h2>Learning Progress</h2>
+                </header>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Study Days</div>
+                            <div class="stat-value" id="total-study-days">1</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Completed</div>
+                            <div class="stat-value" id="total-completed-courses">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Longest Streak</div>
+                            <div class="stat-value" id="longest-streak">1</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏱️</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Study Time</div>
+                            <div class="stat-value" id="total-study-time">0 hrs</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-sections">
+                    <div class="skill-progress">
+                        <h3>Skill Progress</h3>
+                        <div class="skill-bars">
+                            <div class="skill-bar">
+                                <div class="skill-info">
+                                    <span>🎧 Listening</span>
+                                    <span class="skill-score" id="listening-score">4.0</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-info">
+                                    <span>📖 Reading</span>
+                                    <span class="skill-score" id="reading-score">4.0</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-info">
+                                    <span>✍️ Writing</span>
+                                    <span class="skill-score" id="writing-score">4.0</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-info">
+                                    <span>🗣️ Speaking</span>
+                                    <span class="skill-score" id="speaking-score">4.0</span>
+                                </div>
+                                <div class="bar-container">
+                                    <div class="bar-fill" style="width: 40%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div id="activity-list">
+                            <div class="empty-state">
+                                <p>No activity yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notebook View -->
+            <div id="notebook-view" class="view">
+                <header class="view-header">
+                    <h2>📓 Notebook</h2>
+                    <button class="btn-small" id="new-note-btn">+ New Note</button>
+                </header>
+                <div class="notebook-layout">
+                    <aside class="note-list-panel">
+                        <div id="note-list" class="note-list">
+                            <div class="empty-state"><p>No notes yet</p></div>
+                        </div>
+                    </aside>
+                    <div class="note-editor-panel">
+                        <div id="note-editor-placeholder" class="empty-state">
+                            <div class="empty-icon">📝</div>
+                            <p>Select a note or create a new one</p>
+                        </div>
+                        <div id="note-editor" style="display:none;">
+                            <div class="note-editor-header">
+                                <input type="text" id="note-title-input" placeholder="Note title..." class="note-title-input"/>
+                                <div class="note-editor-actions">
+                                    <span class="note-meta" id="note-meta"></span>
+                                    <button class="btn-small" id="save-note-btn">💾 Save</button>
+                                    <button class="btn-icon" id="delete-note-btn" title="Delete note">🗑️</button>
+                                </div>
+                            </div>
+                            <textarea id="note-content-input" placeholder="Write your study notes here...&#10;&#10;Ideas: vocabulary, grammar rules, writing templates, speaking tips..." class="note-content-input"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Course Detail Modal -->
+    <div id="course-modal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close">×</button>
+            <div class="modal-body" id="course-modal-body">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Custom Course Modal -->
+    <div id="custom-course-modal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">×</button>
+            <div class="modal-body">
+                <h3>Create Custom Course</h3>
+                <div class="custom-course-form">
+                    <div class="input-group">
+                        <label>Course Type</label>
+                        <select id="custom-type">
+                            <option value="listening">🎧 Listening</option>
+                            <option value="reading">📖 Reading</option>
+                            <option value="writing">✍️ Writing</option>
+                            <option value="speaking">🗣️ Speaking</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Course Title</label>
+                        <input type="text" id="custom-title" placeholder="e.g. IELTS Listening Section 1 Practice">
+                    </div>
+                    <div class="input-group">
+                        <label>Learning Goal</label>
+                        <input type="text" id="custom-goal" placeholder="e.g. Master personal information question types">
+                    </div>
+                    <div class="input-group">
+                        <label>Estimated Duration (minutes)</label>
+                        <input type="number" id="custom-duration" value="30" min="5" max="180">
+                    </div>
+                    <div class="input-group">
+                        <label>Difficulty Level</label>
+                        <select id="custom-difficulty">
+                            <option value="1">★☆☆☆☆ Beginner</option>
+                            <option value="2">★★☆☆☆ Easy</option>
+                            <option value="3" selected>★★★☆☆ Medium</option>
+                            <option value="4">★★★★☆ Hard</option>
+                            <option value="5">★★★★★ Expert</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Tasks (one per line)</label>
+                        <textarea id="custom-tasks" rows="5" placeholder="e.g.&#10;Listen to the sample dialogue&#10;Complete practice questions&#10;Review mistakes"></textarea>
+                    </div>
+                    <button class="btn-primary" id="save-custom-course">Save Course</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close">×</button>
+            <div class="modal-body">
+                <h3>Settings</h3>
+                <div class="settings-form">
+                    <div class="input-group">
+                        <label>Current Level</label>
+                        <select id="setting-current-level">
+                            <option value="3.0">3.0</option>
+                            <option value="3.5">3.5</option>
+                            <option value="4.0" selected>4.0</option>
+                            <option value="4.5">4.5</option>
+                            <option value="5.0">5.0</option>
+                            <option value="5.5">5.5</option>
+                            <option value="6.0">6.0</option>
+                            <option value="6.5">6.5</option>
+                            <option value="7.0">7.0</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Target Score</label>
+                        <select id="setting-target-score">
+                            <option value="5.5">5.5</option>
+                            <option value="6.0">6.0</option>
+                            <option value="6.5" selected>6.5</option>
+                            <option value="7.0">7.0</option>
+                            <option value="7.5">7.5</option>
+                            <option value="8.0">8.0</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Class Days (Sun=0, Sat=6, comma-separated)</label>
+                        <input type="text" id="setting-class-days" value="1,3,5" placeholder="e.g. 1,3,5">
+                    </div>
+                    <div class="input-group">
+                        <label>Zhipu AI API Key (supports image recognition)</label>
+                        <input type="password" id="setting-api-key" placeholder="Enter your API key">
+                    </div>
+                    <button class="btn-primary" id="save-settings-btn">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="app.js"></script>
+</body>
+</html>

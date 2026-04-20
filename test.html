@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 50px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            background: #2C4251;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        button:hover {
+            background: #1A2930;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>JavaScript 测试页面</h1>
+    <p>如果下面的按钮能点击，说明JavaScript正常工作：</p>
+    
+    <button id="test-btn">点击测试</button>
+    <button id="check-files">检查文件加载</button>
+    
+    <div id="output">
+        <p>等待测试...</p>
+    </div>
+
+    <script>
+        console.log('JavaScript 已加载！');
+        
+        document.getElementById('test-btn').addEventListener('click', function() {
+            document.getElementById('output').innerHTML = '<p style="color: green;">✅ JavaScript 工作正常！</p>';
+            console.log('按钮点击成功！');
+        });
+        
+        document.getElementById('check-files').addEventListener('click', function() {
+            const output = document.getElementById('output');
+            let html = '<h3>文件检查结果：</h3>';
+            
+            // 检查 app.js 是否存在
+            fetch('app.js')
+                .then(response => {
+                    if (response.ok) {
+                        html += '<p>✅ app.js 文件存在</p>';
+                    } else {
+                        html += '<p>❌ app.js 文件未找到</p>';
+                    }
+                    return fetch('styles.css');
+                })
+                .then(response => {
+                    if (response.ok) {
+                        html += '<p>✅ styles.css 文件存在</p>';
+                    } else {
+                        html += '<p>❌ styles.css 文件未找到</p>';
+                    }
+                    
+                    // 检查主页面元素
+                    html += '<h3>主页面检查：</h3>';
+                    const demoBtn = document.querySelector('#demo-btn');
+                    if (demoBtn) {
+                        html += '<p>✅ 找到演示模式按钮</p>';
+                    } else {
+                        html += '<p>❌ 未找到演示模式按钮</p>';
+                    }
+                    
+                    output.innerHTML = html;
+                    console.log('文件检查完成');
+                })
+                .catch(error => {
+                    output.innerHTML = '<p style="color: red;">检查过程出错: ' + error.message + '</p>';
+                    console.error('检查出错:', error);
+                });
+        });
+    </script>
+</body>
+</html>
